@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  mongodb:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+  back:
+    build:
+      context: back
+      dockerfile: Dockerfile
+    ports:
+      - 5001:5001
+    volumes:
+      - ./back:/src/back
+    environment:
+      MONGO_URL: mongodb://mongodb:27017/interview
+    depends_on:
+      - mongodb
+  front:
+    build:
+      context: front
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      REACT_APP_API_URL: http://localhost:5001/api/v1
+    volumes:
+      - ./front:/src/front
+    depends_on:
+      - back
